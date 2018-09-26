@@ -5,7 +5,7 @@ import (
 	"log"
 	"net"
 
-	pb "github.com/marceloaguero/grpc/helloworld/server/pb"
+	pb "github.com/marceloaguero/grpc/examples/helloworld/server/pb"
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

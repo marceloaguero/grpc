@@ -22,7 +22,7 @@ func (s *server) SayHello(ctx context.Context, req *pb.HelloRequest) (*pb.HelloR
 }
 
 func (s *server) SayHelloAgain(ctx context.Context, req *pb.HelloRequest) (*pb.HelloResponse, error) {
-	return &pb.HelloResponse{Message: "Hello again" + req.Name}, nil
+	return &pb.HelloResponse{Message: "Hello again " + req.Name}, nil
 }
 
 func main() {

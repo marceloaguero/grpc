@@ -1,8 +1,7 @@
-// go:generate protoc -I ../proto ../proto/route_guide.proto --go_out=plugins=grpc:pb
-
 package main
 
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -15,7 +14,6 @@ import (
 	"time"
 
 	"github.com/golang/protobuf/proto"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/testdata"

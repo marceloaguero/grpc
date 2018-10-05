@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net"
 
@@ -13,10 +14,11 @@ import (
 )
 
 const (
-	port    = ":50052"
-	certCrt = "cert/server.crt"
-	certCsr = "cert/server.csr"
-	certKey = "cert/server.key"
+	listenHost = "localhost"
+	port       = "50052"
+	certCrt    = "cert/server.crt"
+	certCsr    = "cert/server.csr"
+	certKey    = "cert/server.key"
 )
 
 type server struct{}
@@ -30,7 +32,7 @@ func (s *server) SayHelloAgain(ctx context.Context, req *pb.HelloRequest) (*pb.H
 }
 
 func main() {
-	lis, err := net.Listen("tcp", port)
+	lis, err := net.Listen("tcp", fmt.Sprintf("%s:%s", listenHost, port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}

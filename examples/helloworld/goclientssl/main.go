@@ -23,6 +23,8 @@ func main() {
 	if err != nil {
 		log.Fatalf("could not load TLS cert: %v", err)
 	}
+
+	
 	conn, err := grpc.Dial(address, grpc.WithInsecure())
 	if err != nil {
 		log.Fatalf("did not connect: %v", err)

@@ -2,6 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"flag"
+	"io/ioutil"
 	"log"
 	"net"
 
@@ -13,9 +16,7 @@ import (
 	pb "github.com/marceloaguero/grpc/examples/releases/pkg/pb"
 )
 
-const (
-	port = ":50051"
-)
+var listenPort = flag.String("l", ":7100", "Specify the port that the server will listen on")
 
 type releaseInfo struct {
 	ReleaseDate     string `json:"release_date"`
@@ -69,15 +70,31 @@ func (g *goReleaseServer) ListReleases(ctx context.Context, req *pb.ListReleases
 }
 
 func main() {
-	lis, err := net.Listen("tcp", port)
+	flag.Parse()
+	svc := &goReleaseServer{
+		releases: make(map[string]releaseInfo),
+	}
+
+	jsonData, err := ioutil.ReadFile("../../data/releases.json")
+	if err != nil {
+		log.Fatalf("failed to read data file: %v", err)
+	}
+
+	// Read releases from JSON data file
+	err = json.Unmarshal(jsonData, &svc.releases)
+	if err != nil {
+		log.Fatalf("failed to marshal release data: %v", err)
+	}
+
+	s := grpc.NewServer()
+	lis, err := net.Listen("tcp", *listenPort)
 	if err != nil {
 		log.Fatalf("failed to listen %v", err)
 	}
 
-	log.Println("Listening on ", port)
+	log.Println("Listening on ", *listenPort)
 
-	s := grpc.NewServer()
-	pb.RegisterGoReleasesServer(s, &goReleaseServer{})
+	pb.RegisterGoReleasesServer(s, svc)
 	reflection.Register(s)
 
 	if err := s.Serve(lis); err != nil {

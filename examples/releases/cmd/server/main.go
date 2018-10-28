@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"flag"
 	"io/ioutil"
@@ -10,6 +11,7 @@ import (
 
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials"
 	"google.golang.org/grpc/reflection"
 	"google.golang.org/grpc/status"
 
@@ -86,7 +88,24 @@ func main() {
 		log.Fatalf("failed to marshal release data: %v", err)
 	}
 
-	s := grpc.NewServer()
+	// Prepate TLS config
+	tlsCert := "../../certs/demo.crt"
+	tlsKey := "../../certs/demo.key"
+	cert, err := tls.LoadX509KeyPair(tlsCert, tlsKey)
+	if err != nil {
+		log.Fatalf("failed to load cert: %v", err)
+	}
+
+	// Create TLS credentials
+	creds := credentials.NewTLS(&tls.Config{
+		Certificates: []tls.Certificate{cert},
+	})
+
+	// Create gRPC server with transport credentials
+	s := grpc.NewServer(
+		grpc.Creds(creds),
+	)
+
 	lis, err := net.Listen("tcp", *listenPort)
 	if err != nil {
 		log.Fatalf("failed to listen %v", err)
